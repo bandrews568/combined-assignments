@@ -14,6 +14,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  */
 public class Fibonacci {
 
+	
     /**
      * Calculates the value in the Fibonacci sequence at a given index. For example,
      * `atIndex(0)` and `atIndex(1)` should return `1`, because the first two elements of the
@@ -24,8 +25,19 @@ public class Fibonacci {
      * @throws IllegalArgumentException if the given index is less than zero
      */
     public static int atIndex(int i) throws IllegalArgumentException {
-        throw new NotImplementedException();
+    	
+    	if (i == -1) {
+    		throw new IllegalArgumentException();
+    	}
+    	
+    	int[] array = fibonacci(100000); 
+    	return array[i];
+    	
+    	
+    	
+    	
     }
+    
 
     /**
      * Calculates a slice of the fibonacci sequence, starting from a given start index (inclusive) and
@@ -38,7 +50,26 @@ public class Fibonacci {
      *                                  given end is less than the given start
      */
     public static int[] slice(int start, int end) throws IllegalArgumentException {
-        throw new NotImplementedException();
+    	
+    	if (start == -1 || end == -1) {
+    		throw new IllegalArgumentException();
+    	}
+    	
+    	if (end < start) {
+    		throw new IllegalArgumentException();
+    	}
+    	
+        int[] array = fibonacci(100000);
+        int[] sliceOfArray = new int[end - start];
+        
+        int index = 0;
+        
+        for (int i = start; i < end; i++) {
+        	sliceOfArray[index] = array[start];
+        	index++;
+        }
+        return sliceOfArray;
+        
     }
 
     /**
@@ -49,6 +80,22 @@ public class Fibonacci {
      * @throws IllegalArgumentException if the given count is negative
      */
     public static int[] fibonacci(int count) throws IllegalArgumentException {
-        throw new NotImplementedException();
+    	
+    	int[] numbers;    	
+    	if (count <= 0) {
+    		numbers = new int[]{};
+    		return numbers;
+    	}
+    	
+    	numbers = new int[count];
+    	
+    	numbers[0] = 1;
+    	numbers[1] = 1;
+    	   	
+    	for (int i = 2; i < count; i++) {
+            numbers[i] = numbers[i - 1] + numbers[i - 2];
+        }
+    	
+    	return numbers;        
     }
 }

@@ -1,5 +1,8 @@
 package com.cooksys.ftd.assignments.control;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
@@ -26,7 +29,16 @@ public class FizzBuzz {
      * @throws IllegalArgumentException if b is zero
      */
     public static boolean divides(int a, int b) throws IllegalArgumentException {
-        throw new NotImplementedException();
+    	
+    	if (b == 0) {
+    		throw new IllegalArgumentException();
+    	}
+        
+    	if (a % b == 0) {
+        	return true;
+        } else {
+        	return false;
+        }
     }
 
     /**
@@ -41,7 +53,17 @@ public class FizzBuzz {
      * @return a message according to the format above, or null if n is not divisible by either 3 or 5
      */
     public static String message(int n) {
-        throw new NotImplementedException();
+        
+    	if (n % 3 == 0 && n % 5 == 0) {
+    		return n + ": " + "FizzBuzz";
+    	} else if (n % 3 == 0) {
+    		return n + ": " + "Fizz";
+    	} else if (n % 5 == 0) {
+    		return n + ": " + "Buzz";
+    	} else {
+    		return null;
+    	}
+    	
     }
 
     /**
@@ -55,7 +77,47 @@ public class FizzBuzz {
      * @throws IllegalArgumentException if the given end is less than the given start
      */
     public static String[] messages(int start, int end) throws IllegalArgumentException {
-        throw new NotImplementedException();
+    	    	
+    	String[] messageArray;
+    	
+    	if (start == end) {
+    		messageArray = new String[]{};
+    		return messageArray;
+    	} else if (end - start == 1) {
+    		messageArray = new String[1];
+    		messageArray[0] = message(start);
+    	} else {
+    		messageArray = new String[end - 1];
+    	}
+    	   	
+    	if (start > end) {
+    		throw new IllegalArgumentException();
+    	}
+    	
+    	int number = start;    	
+    	List<String> filteredMessages = new ArrayList<>();
+    	
+    	if (messageArray.length != 1) {
+    		for (int i = start; i < end; i++) {
+                String numberMessage = message(number);
+                
+                if (numberMessage != null) {
+                	filteredMessages.add(numberMessage);
+                }        	
+                number++;
+            }
+    	} else { 
+    		// Array length is 1
+    		filteredMessages.add(messageArray[0]);
+    	}
+    	
+        
+        String[] filteredMessageArray = new String[filteredMessages.size()];
+        
+        for (int i = 0; i < filteredMessages.size(); i ++) {
+        	filteredMessageArray[i] = filteredMessages.get(i);
+        }
+        return filteredMessageArray;
     }
 
     /**
@@ -63,7 +125,11 @@ public class FizzBuzz {
      * the relevant messages to sysout
      */
     public static void main(String[] args) {
-        throw new NotImplementedException();
+        String[] resultMessages = messages(3, 6);
+        
+        for (int i = 0; i < resultMessages.length; i++) {
+        	System.out.println(resultMessages[i]);       	
+        }
     }
 
 }
