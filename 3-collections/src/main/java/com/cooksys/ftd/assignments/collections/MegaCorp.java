@@ -8,7 +8,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.*;
 
 public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
-
+	
+	Set<Capitalist> entireHierarchy = new HashSet<>();
+	
     /**
      * Adds a given element to the hierarchy.
      * <p>
@@ -29,7 +31,26 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public boolean add(Capitalist capitalist) {
-        throw new NotImplementedException();
+    	
+    	// Element is already in hierarchy
+    	if (has(capitalist)) {
+    		return false;
+    	}
+    	
+    	// Element has parent and that parent is not part of the hierarchy
+    	if (capitalist.hasParent() && !entireHierarchy.contains(capitalist)) {
+    		entireHierarchy.add(capitalist);
+    	}
+    	
+    	if (!capitalist.hasParent()) {
+    		for (Capitalist person : entireHierarchy) {
+    			if (person.getParent().equals(capitalist)) { 
+    				return true; // Element has no parent but is a parent its self
+    			}
+    		return false; // Element has no parent and is NOT a parent itself
+    		}
+    	}    	
+    	return true;
     }
 
     /**
@@ -38,7 +59,7 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public boolean has(Capitalist capitalist) {
-        throw new NotImplementedException();
+        return entireHierarchy.contains(capitalist);       	
     }
 
     /**
@@ -47,7 +68,7 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public Set<Capitalist> getElements() {
-        throw new NotImplementedException();
+    	return entireHierarchy;
     }
 
     /**
@@ -56,7 +77,13 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public Set<FatCat> getParents() {
-        throw new NotImplementedException();
+    	Set<FatCat> isParent = new HashSet<>();
+    	for (Capitalist person : entireHierarchy) {
+    		if (person.hasParent()) {
+    			isParent.add(person.getParent());
+    		}
+    	}
+    	return isParent;
     }
 
     /**
@@ -77,7 +104,19 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public Map<FatCat, Set<Capitalist>> getHierarchy() {
-        throw new NotImplementedException();
+    	
+    	HashMap<FatCat, Set<Capitalist>> hierarchyMap = new HashMap<>();
+    	
+    	if (entireHierarchy.size() == 0) {
+    		return hierarchyMap;
+    	}
+    	
+    	for (Capitalist person : entireHierarchy) {
+    		FatCat personNameKey = (FatCat) person;    		
+    		Set<Capitalist> personParents = new HashSet<>();
+    		List<FatCat> getPersonParents = getParentChain(person);
+    	}
+    	
     }
 
     /**
@@ -88,6 +127,24 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public List<FatCat> getParentChain(Capitalist capitalist) {
-        throw new NotImplementedException();
+        List<FatCat> entireParentChainList = new ArrayList<>();
+        
+        // Has no parent
+        if (!capitalist.hasParent() || !entireHierarchy.contains(capitalist)) {
+        	return entireParentChainList;
+        }
+        
+        Capitalist currentCapitalist = capitalist;
+        Capitalist parent = capitalist.getParent();
+        
+        while (true) {
+        	if (currentCapitalist.hasParent()) {
+        		entireParentChainList.add((FatCat) parent);
+        		currentCapitalist = parent;
+        	}
+        	break;
+        	
+        }
+        return entireParentChainList;        
     }
 }

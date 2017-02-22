@@ -3,6 +3,34 @@ package com.cooksys.ftd.assignments.objects;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SimplifiedRational implements IRational {
+	
+	int numerator;
+	int denominator;
+	
+    /**
+     * Constructor for rational values of the type:
+     * <p>
+     * `numerator / denominator`
+     * <p>
+     * Simplification of numerator/denominator pair should occur in this method.
+     * If the numerator is zero, no further simplification can be performed
+     *
+     * @param numerator   the numerator of the rational value
+     * @param denominator the denominator of the rational value
+     * @throws IllegalArgumentException if the given denominator is 0
+     */
+    public SimplifiedRational(int numerator, int denominator) throws IllegalArgumentException {
+        if (denominator == 0) {
+        	throw new IllegalArgumentException();
+        }
+    	
+    	int[] simplifyNumbers = simplify(numerator, denominator);
+        
+        this.numerator = simplifyNumbers[0];
+        this.denominator = simplifyNumbers[1];
+    }
+	
+	
     /**
      * Determines the greatest common denominator for the given values
      *
@@ -12,7 +40,13 @@ public class SimplifiedRational implements IRational {
      * @throws IllegalArgumentException if a <= 0 or b < 0
      */
     public static int gcd(int a, int b) throws IllegalArgumentException {
-        throw new NotImplementedException();
+        
+    	if (a <= 0 || b < 0) {
+    		throw new IllegalArgumentException();
+    	}
+    	
+    	return gcd(b, a % b);
+    	
     }
 
     /**
@@ -28,24 +62,17 @@ public class SimplifiedRational implements IRational {
      * @return a two element array representation of the simplified numerator and denominator
      * @throws IllegalArgumentException if the given denominator is 0
      */
-    public static int[] simplify(int numerator, int denominator) throws IllegalArgumentException {
-        throw new NotImplementedException();
-    }
 
-    /**
-     * Constructor for rational values of the type:
-     * <p>
-     * `numerator / denominator`
-     * <p>
-     * Simplification of numerator/denominator pair should occur in this method.
-     * If the numerator is zero, no further simplification can be performed
-     *
-     * @param numerator   the numerator of the rational value
-     * @param denominator the denominator of the rational value
-     * @throws IllegalArgumentException if the given denominator is 0
-     */
-    public SimplifiedRational(int numerator, int denominator) throws IllegalArgumentException {
-        throw new NotImplementedException();
+	public static int[] simplify(int numerator, int denominator) throws IllegalArgumentException {
+    	
+    	if (denominator == 0) {
+    		throw new IllegalArgumentException();
+    	}
+    	
+    	int greatestGCD = gcd(numerator, denominator);
+    	
+    	int[] numberArray = {numerator / greatestGCD, denominator / greatestGCD};
+    	return numberArray;
     }
 
     /**
@@ -53,7 +80,7 @@ public class SimplifiedRational implements IRational {
      */
     @Override
     public int getNumerator() {
-        throw new NotImplementedException();
+       return numerator;
     }
 
     /**
@@ -61,7 +88,7 @@ public class SimplifiedRational implements IRational {
      */
     @Override
     public int getDenominator() {
-        throw new NotImplementedException();
+        return denominator;
     }
 
     /**
@@ -76,20 +103,30 @@ public class SimplifiedRational implements IRational {
      * @throws IllegalArgumentException if the given denominator is 0
      */
     @Override
-    public SimplifiedRational construct(int numerator, int denominator) throws IllegalArgumentException {
-        throw new NotImplementedException();
+    public SimplifiedRational construct(int numerator, int denominator) throws IllegalArgumentException {      
+    	
+    	if (denominator == 0) {
+    		throw new IllegalArgumentException();
+    	}
+    	   	
+    	return new SimplifiedRational(numerator, denominator);   	
     }
 
-    /**
-     * @param obj the object to check this against for equality
-     * @return true if the given obj is a rational value and its
-     * numerator and denominator are equal to this rational value's numerator and denominator,
-     * false otherwise
-     */
-    @Override
-    public boolean equals(Object obj) {
-        throw new NotImplementedException();
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SimplifiedRational other = (SimplifiedRational) obj;
+		if (denominator != other.denominator)
+			return false;
+		if (numerator != other.numerator)
+			return false;
+		return true;
+	}
 
     /**
      * If this is positive, the string should be of the form `numerator/denominator`
@@ -100,6 +137,18 @@ public class SimplifiedRational implements IRational {
      */
     @Override
     public String toString() {
-        throw new NotImplementedException();
+    	
+    	int numerator = getNumerator();
+    	int denominator = getDenominator();
+    	
+    	if (numerator < 0 && denominator < 0) {
+    		return Math.abs(numerator) + "/" + Math.abs(denominator);
+    	} else if (numerator > 0 && denominator < 0) {
+    		return "-" + numerator + "/" + Math.abs(denominator);
+    	} else if (numerator < 0 && denominator > 0) {
+    		return "-" + Math.abs(numerator) + "/" + denominator;
+    	} else {
+    		return numerator + "/" + denominator;
+    	}
     }
 }
