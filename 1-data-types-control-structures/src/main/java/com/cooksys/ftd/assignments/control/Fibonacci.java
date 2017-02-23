@@ -65,7 +65,7 @@ public class Fibonacci {
         int index = 0;
         
         for (int i = start; i < end; i++) {
-        	sliceOfArray[index] = array[start];
+        	sliceOfArray[index] = array[i];
         	index++;
         }
         return sliceOfArray;
@@ -81,16 +81,26 @@ public class Fibonacci {
      */
     public static int[] fibonacci(int count) throws IllegalArgumentException {
     	
+    	if (count < 0) {
+    		throw new IllegalArgumentException();
+    	}
+    	
     	int[] numbers;    	
-    	if (count <= 0) {
+    	if (count == 0) {
     		numbers = new int[]{};
     		return numbers;
     	}
     	
     	numbers = new int[count];
-    	
+    	System.out.println(count);
     	numbers[0] = 1;
-    	numbers[1] = 1;
+    	
+    	if (count != 1) {
+    		numbers[1] = 1;
+    	}
+    	
+    	
+    	
     	   	
     	for (int i = 2; i < count; i++) {
             numbers[i] = numbers[i - 1] + numbers[i - 2];
