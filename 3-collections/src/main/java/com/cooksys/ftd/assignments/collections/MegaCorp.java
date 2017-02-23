@@ -1,8 +1,11 @@
 package com.cooksys.ftd.assignments.collections;
 
+import com.cooksys.ftd.assignments.collections.generators.Cap;
 import com.cooksys.ftd.assignments.collections.hierarchy.Hierarchy;
 import com.cooksys.ftd.assignments.collections.model.Capitalist;
 import com.cooksys.ftd.assignments.collections.model.FatCat;
+import com.cooksys.ftd.assignments.collections.model.WageSlave;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
@@ -15,10 +18,10 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      * Adds a given element to the hierarchy.
      * <p>
      * If the given element is already present in the hierarchy,
-     * do not add it and return false
+     * do not add it and return false 
      * <p>
      * If the given element has a parent and the parent is not part of the hierarchy,
-     * add the parent and then add the given element
+     * add the parent and then add the given element 
      * <p>
      * If the given element has no parent but is a Parent itself,
      * add it to the hierarchy
@@ -31,25 +34,22 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public boolean add(Capitalist capitalist) {
-    	
+    	    	    	
     	// Element is already in hierarchy
-    	if (has(capitalist)) {
+    	if (capitalist == null || has(capitalist)) {
     		return false;
     	}
-    	
-    	// Element has parent and that parent is not part of the hierarchy
-    	if (capitalist.hasParent() && !entireHierarchy.contains(capitalist)) {
+
+    	if (capitalist.hasParent() && !entireHierarchy.contains(capitalist.getParent())) {
     		entireHierarchy.add(capitalist);
+    		entireHierarchy.add(capitalist.getParent());
     	}
     	
-    	if (!capitalist.hasParent()) {
-    		for (Capitalist person : entireHierarchy) {
-    			if (person.getParent().equals(capitalist)) { 
-    				return true; // Element has no parent but is a parent its self
-    			}
-    		return false; // Element has no parent and is NOT a parent itself
-    		}
-    	}    	
+    	// Element has no parent and can't be a parent itself
+    	if (!capitalist.hasParent() && capitalist instanceof WageSlave) {
+    		return false;
+    	}
+    	entireHierarchy.add(capitalist);
     	return true;
     }
 
@@ -59,7 +59,11 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public boolean has(Capitalist capitalist) {
-        return entireHierarchy.contains(capitalist);       	
+    	
+    	if (capitalist == null) {
+    		return false;
+    	}
+    	return entireHierarchy.contains(capitalist);
     }
 
     /**
@@ -67,8 +71,9 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      * or an empty set if no elements have been added to the hierarchy
      */
     @Override
-    public Set<Capitalist> getElements() {
-    	return entireHierarchy;
+    public Set<Capitalist> getElements() {    	
+    	Set<Capitalist> allElements = new HashSet<>(entireHierarchy);
+    	return allElements;
     }
 
     /**
@@ -78,10 +83,21 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     @Override
     public Set<FatCat> getParents() {
     	Set<FatCat> isParent = new HashSet<>();
+    	
+    	if (entireHierarchy.isEmpty()) {
+    		return isParent;
+    	}
+    	    	
+    	if (entireHierarchy.size() == 1) {
+    		for (Capitalist person : entireHierarchy) {
+    			isParent.add( (FatCat) person);
+    		}
+    	}
+    	        	
     	for (Capitalist person : entireHierarchy) {
     		if (person.hasParent()) {
     			isParent.add(person.getParent());
-    		}
+    		} 
     	}
     	return isParent;
     }
@@ -94,7 +110,20 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public Set<Capitalist> getChildren(FatCat fatCat) {
-        throw new NotImplementedException();
+        
+    	Set<Capitalist> childrenSet = new HashSet<>();
+    	
+    	if (!has(fatCat)) {
+    		return childrenSet;
+    	}
+    	
+    	for (Capitalist person : entireHierarchy) {
+    		if (person.getParent() == fatCat) {
+    			childrenSet.add(person);
+    		}
+    	}
+    	return childrenSet;
+    	
     }
 
     /**
@@ -107,16 +136,16 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     	
     	HashMap<FatCat, Set<Capitalist>> hierarchyMap = new HashMap<>();
     	
-    	if (entireHierarchy.size() == 0) {
+    	if (entireHierarchy.isEmpty()) {
     		return hierarchyMap;
     	}
     	
     	for (Capitalist person : entireHierarchy) {
-    		FatCat personNameKey = (FatCat) person;    		
-    		Set<Capitalist> personParents = new HashSet<>();
-    		List<FatCat> getPersonParents = getParentChain(person);
-    	}
-    	
+    		FatCat personNameKey = (FatCat) person;
+    		Set<Capitalist> personChildern = new HashSet<>(getChildren(personNameKey));
+    		hierarchyMap.put(personNameKey, personChildern);
+    	}   	
+    	return hierarchyMap;
     }
 
     /**
@@ -128,6 +157,10 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     @Override
     public List<FatCat> getParentChain(Capitalist capitalist) {
         List<FatCat> entireParentChainList = new ArrayList<>();
+        
+        if (capitalist == null) {
+        	return entireParentChainList;
+        }
         
         // Has no parent
         if (!capitalist.hasParent() || !entireHierarchy.contains(capitalist)) {
@@ -142,8 +175,7 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
         		entireParentChainList.add((FatCat) parent);
         		currentCapitalist = parent;
         	}
-        	break;
-        	
+        	break;        	
         }
         return entireParentChainList;        
     }
