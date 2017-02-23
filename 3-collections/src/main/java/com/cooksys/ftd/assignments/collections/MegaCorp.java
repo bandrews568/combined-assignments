@@ -39,17 +39,17 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     	if (capitalist == null || has(capitalist)) {
     		return false;
     	}
-
-    	if (capitalist.hasParent() && !entireHierarchy.contains(capitalist.getParent())) {
-    		entireHierarchy.add(capitalist);
-    		entireHierarchy.add(capitalist.getParent());
-    	}
     	
-    	// Element has no parent and can't be a parent itself
-    	if (!capitalist.hasParent() && capitalist instanceof WageSlave) {
+    	if (capitalist.hasParent()) {
+    		entireHierarchy.add(capitalist);
+    		if (!entireHierarchy.contains(capitalist.getParent())) {
+    			add(capitalist.getParent());
+    		}
+    	} else if (!capitalist.hasParent() && capitalist instanceof WageSlave) {
     		return false;
+    	} else {
+    		entireHierarchy.add(capitalist);
     	}
-    	entireHierarchy.add(capitalist);
     	return true;
     }
 
@@ -71,9 +71,21 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      * or an empty set if no elements have been added to the hierarchy
      */
     @Override
-    public Set<Capitalist> getElements() {    	
-    	Set<Capitalist> allElements = new HashSet<>(entireHierarchy);
-    	return allElements;
+    public Set<Capitalist> getElements() { 
+    	Set<Capitalist> entireElementSet = new HashSet<>(entireHierarchy);
+        for (Capitalist person : entireHierarchy) {
+            add(person);
+            while (person != null) {
+                entireElementSet.add(person);
+                person = person.getParent();
+            }
+        }
+        return entireElementSet;
+    	
+    	
+    	
+//    	Set<Capitalist> allElements = new HashSet<>(entireHierarchy);
+//    	return allElements;
     }
 
     /**
@@ -88,18 +100,16 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     		return isParent;
     	}
     	    	
-    	if (entireHierarchy.size() == 1) {
-    		for (Capitalist person : entireHierarchy) {
-    			isParent.add( (FatCat) person);
-    		}
-    	}
-    	        	
-    	for (Capitalist person : entireHierarchy) {
-    		if (person.hasParent()) {
-    			isParent.add(person.getParent());
-    		} 
-    	}
-    	return isParent;
+    	Set<FatCat> allParents = new HashSet<>();
+        for (Capitalist person : entireHierarchy) {
+            add(person);            
+            FatCat parent = person instanceof FatCat ? (FatCat) person : person.getParent();
+            while (parent != null) {
+                allParents.add(parent);
+                parent = parent.getParent();
+            }
+        }
+        return allParents;
     }
 
     /**
@@ -139,12 +149,13 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
     	if (entireHierarchy.isEmpty()) {
     		return hierarchyMap;
     	}
-    	
-    	for (Capitalist person : entireHierarchy) {
-    		FatCat personNameKey = (FatCat) person;
-    		Set<Capitalist> personChildern = new HashSet<>(getChildren(personNameKey));
-    		hierarchyMap.put(personNameKey, personChildern);
-    	}   	
+    	    	
+    	Set<FatCat> allParents = getParents();
+
+    	for (FatCat parent : allParents) {
+    		Set<Capitalist> children = getChildren(parent);
+            hierarchyMap.put(parent, children);
+    	}  	
     	return hierarchyMap;
     }
 
@@ -156,26 +167,21 @@ public class MegaCorp implements Hierarchy<Capitalist, FatCat> {
      */
     @Override
     public List<FatCat> getParentChain(Capitalist capitalist) {
-        List<FatCat> entireParentChainList = new ArrayList<>();
+        List<FatCat> entireParentChainList = new LinkedList<>();
         
         if (capitalist == null) {
         	return entireParentChainList;
         }
-        
+                
         // Has no parent
-        if (!capitalist.hasParent() || !entireHierarchy.contains(capitalist)) {
+        if (!capitalist.hasParent() || !entireHierarchy.contains(capitalist.getParent())) {
         	return entireParentChainList;
         }
         
-        Capitalist currentCapitalist = capitalist;
-        Capitalist parent = capitalist.getParent();
-        
-        while (true) {
-        	if (currentCapitalist.hasParent()) {
-        		entireParentChainList.add((FatCat) parent);
-        		currentCapitalist = parent;
-        	}
-        	break;        	
+        FatCat parent = capitalist.getParent();
+        while (parent != null) {
+            entireParentChainList.add(parent);
+            parent = parent.getParent();
         }
         return entireParentChainList;        
     }
