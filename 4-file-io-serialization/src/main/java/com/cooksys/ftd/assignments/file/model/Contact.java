@@ -1,8 +1,14 @@
 package com.cooksys.ftd.assignments.file.model;
 
+import javax.xml.bind.annotation.*;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Contact {
+	@XmlAttribute(name = "first-name")
     private String firstName;
-    private String lastName;
+    @XmlAttribute(name = "last-name")
+	private String lastName;
     private String email;
     private String phoneNumber;
 
