@@ -15,8 +15,9 @@ public class Session {
 	private String startDate;
     
 	private Instructor instructor;
-    
-	@XmlElement(name = "students")
+
+	@XmlElementWrapper(name = "students")
+	@XmlElement(name = "student")
 	private List<Student> students;
 
     public String getLocation() {

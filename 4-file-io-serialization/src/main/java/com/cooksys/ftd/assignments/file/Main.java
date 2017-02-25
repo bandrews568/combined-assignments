@@ -7,6 +7,7 @@ import com.cooksys.ftd.assignments.file.model.Student;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import java.io.File;
@@ -16,9 +17,17 @@ import java.util.List;
 public class Main {
 	
 	private static final String STUDENT_DIRECTORY_PATH = 
-			"C:/Users/student-3/combined-assignments/4-file-io-serialization/input/memphis/08-08-2016/students";
+			"/Users/brandon/Desktop/combined-assignments/4-file-io-serialization/input/memphis/08-08-2016/students";
 	private static final String INSTRUCTOR_FILE_PATH = 
-			"C:/Users/student-3/combined-assignments/4-file-io-serialization/input/memphis/08-08-2016";
+			"/Users/brandon/Desktop/combined-assignments/4-file-io-serialization/input/memphis/08-08-2016/instructor.xml";
+	private static final String ROOT_DIRECTORY =
+            "/Users/brandon/Desktop/combined-assignments/4-file-io-serialization/input";
+	private static final String OUTPUT_DIRECTORY =
+            "/Users/brandon/Desktop/combined-assignments/4-file-io-serialization/output/session.xml";
+
+	private static JAXBContext studentContext;
+	private static JAXBContext instructorContext;
+	private static JAXBContext sessionContext;
 		
 	private static File[] walkDirectory(String folderPath) {
 		File directory = new File(folderPath);
@@ -33,7 +42,7 @@ public class Main {
      * {@link Contact} object.
      *
      * @param studentContactFile the XML file to use
-     * @param jaxb the JAXB context to use
+     * @param jaxbContext the JAXB context to use
      * @return a {@link Student} object built using the {@link Contact} data in the given file
      */
     public static Student readStudent(File studentContactFile, JAXBContext jaxbContext) {
@@ -59,7 +68,7 @@ public class Main {
      * @param jaxb the JAXB context to use
      * @return a list of {@link Student} objects built using the contact files in the given directory
      */
-    public static List<Student> readStudents(File studentDirectory, JAXBContext jaxb) {
+    public static List<Student> readStudents(File[] studentDirectory, JAXBContext jaxb) {
 
         List<Student> studentList = new ArrayList<>();
     	File[] allStudentFiles = walkDirectory(STUDENT_DIRECTORY_PATH);
@@ -83,7 +92,7 @@ public class Main {
      * {@link Contact} object.
      *
      * @param instructorContactFile the XML file to use
-     * @param jaxb the JAXB context to use
+     * @param jaxbContext the JAXB context to use
      * @return an {@link Instructor} object built using the {@link Contact} data in the given file
      */
     public static Instructor readInstructor(File instructorContactFile, JAXBContext jaxbContext) {
@@ -113,7 +122,18 @@ public class Main {
      * @return a {@link Session} object built from the data in the given directory
      */
     public static Session readSession(File rootDirectory, JAXBContext jaxb) {
-        return null; // TODO
+
+        File[] studentFileList = walkDirectory(STUDENT_DIRECTORY_PATH);
+        File instructorFilePath = new File(INSTRUCTOR_FILE_PATH);
+        List<Student> studentList = readStudents(studentFileList, studentContext);
+        Instructor instructor = readInstructor(instructorFilePath, instructorContext);
+
+        Session session = new Session();
+        session.setLocation("Memphis");
+        session.setStartDate("08-08-2016");
+        session.setStudents(studentList);
+        session.setInstructor(instructor);
+        return session;
     }
 
     /**
@@ -124,10 +144,14 @@ public class Main {
      * @param jaxb the JAXB context to use
      */
     public static void writeSession(Session session, File sessionFile, JAXBContext jaxb) {
-        
-    	File fileName = sessionFile;
-    	
-    	
+
+    	try {
+			Marshaller jaxbMarshaller = jaxb.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			jaxbMarshaller.marshal(session, sessionFile);
+		}  catch (JAXBException e) {
+    		e.printStackTrace();
+		}
     }
 
     /**
@@ -157,23 +181,15 @@ public class Main {
      *      </session>
      */
     public static void main(String[] args) {
-    	
-    	File file = new File(INSTRUCTOR_FILE_PATH);
-    	JAXBContext context;
-		try {
-			context = JAXBContext.newInstance(Instructor.class);
-			Instructor instructor = readInstructor(file, context);
-			Session session = new Session();
-	    	session.setLocation("memphis");
-	    	session.setStartDate("02-24-17");
-	    	session.setInstructor(instructor);
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    	
-    	
-    	
+
+        try {
+            studentContext = JAXBContext.newInstance(Student.class);
+            instructorContext = JAXBContext.newInstance(Instructor.class);
+            sessionContext = JAXBContext.newInstance(Session.class);
+            Session sessionData = readSession(new File(ROOT_DIRECTORY), sessionContext);
+            writeSession(sessionData, new File(OUTPUT_DIRECTORY), sessionContext);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
     }
 }
