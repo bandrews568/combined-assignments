@@ -1,1 +1,5 @@
-<config/>
+<config>
+    <local port="8100"/>
+    <remote port="8100" host="localhost" />
+    <student-file-path>5-socket-io-serialization/config/student.xml</student-file-path>
+</config>

@@ -1,8 +1,15 @@
 package com.cooksys.ftd.assignments.socket;
 
+import com.cooksys.ftd.assignments.socket.model.Config;
 import com.cooksys.ftd.assignments.socket.model.Student;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Server extends Utils {
 
@@ -14,7 +21,16 @@ public class Server extends Utils {
      * @return a {@link Student} object unmarshalled from the given file path
      */
     public static Student loadStudent(String studentFilePath, JAXBContext jaxb) {
-        return null; // TODO
+
+        Student student = null;
+        try {
+            Unmarshaller unmarshaller = jaxb.createUnmarshaller();
+            File filePath = new File(studentFilePath);
+            student = (Student) unmarshaller.unmarshal(filePath);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        return student;
     }
 
     /**
@@ -30,6 +46,32 @@ public class Server extends Utils {
      * Following this transaction, the server may shut down or listen for more connections.
      */
     public static void main(String[] args) {
-        // TODO
+        JAXBContext jaxbContext = createJAXBContext();
+        Config config = loadConfig(CONFIG_FILE_PATH, jaxbContext);
+        int portNumber = config.getLocal().getPort();
+
+        String studentFilePath = config.getStudentFilePath();
+        File studentFile = new File(studentFilePath);
+
+        try {
+            ServerSocket serverSocket = new ServerSocket(portNumber);
+
+            while (true) {
+                Socket socket = serverSocket.accept();
+
+                FileInputStream fileInputStream = new FileInputStream(studentFile);
+
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+                byte[] byteArray = new byte[(int) studentFile.length()];
+                bufferedInputStream.read(byteArray, 0, byteArray.length);
+
+                OutputStream outputStream = socket.getOutputStream();
+                outputStream.write(byteArray, 0, byteArray.length);
+                outputStream.flush();
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

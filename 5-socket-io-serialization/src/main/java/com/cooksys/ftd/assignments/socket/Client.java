@@ -1,5 +1,16 @@
 package com.cooksys.ftd.assignments.socket;
 
+import com.cooksys.ftd.assignments.socket.model.Config;
+import com.cooksys.ftd.assignments.socket.model.Student;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.net.Socket;
+
+import static com.cooksys.ftd.assignments.socket.Utils.CONFIG_FILE_PATH;
+
 public class Client {
 
     /**
@@ -12,6 +23,32 @@ public class Client {
      * over the socket as xml, and should unmarshal that object before printing its details to the console.
      */
     public static void main(String[] args) {
-        // TODO
+        JAXBContext jaxbContext = Utils.createJAXBContext();
+        Config config = Utils.loadConfig(CONFIG_FILE_PATH, jaxbContext);
+        int portNumber = config.getRemote().getPort();
+        String host = config.getRemote().getHost();
+
+        try {
+            Socket socket = new Socket(host, portNumber);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            StringBuffer stringBuffer = new StringBuffer();
+            String line;
+
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuffer.append(line+"\n");
+            }
+
+            JAXBContext context = JAXBContext.newInstance(Student.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            StringReader stringReader = new StringReader(stringBuffer.toString());
+            Student student = (Student) unmarshaller.unmarshal(stringReader);
+            System.out.println(student.toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
     }
 }
