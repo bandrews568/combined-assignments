@@ -53,15 +53,12 @@ public class Server extends Utils {
         String studentFilePath = config.getStudentFilePath();
         File studentFile = new File(studentFilePath);
 
-        try {
+        try (FileInputStream fileInputStream = new FileInputStream(studentFile);
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream)){
             ServerSocket serverSocket = new ServerSocket(portNumber);
 
             while (true) {
                 Socket socket = serverSocket.accept();
-
-                FileInputStream fileInputStream = new FileInputStream(studentFile);
-
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
                 byte[] byteArray = new byte[(int) studentFile.length()];
                 bufferedInputStream.read(byteArray, 0, byteArray.length);
 
@@ -69,6 +66,7 @@ public class Server extends Utils {
                 outputStream.write(byteArray, 0, byteArray.length);
                 outputStream.flush();
                 socket.close();
+                outputStream.close();
             }
         } catch (IOException e) {
             e.printStackTrace();

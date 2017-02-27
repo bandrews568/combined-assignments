@@ -31,7 +31,6 @@ public class Client {
         try {
             Socket socket = new Socket(host, portNumber);
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
             StringBuffer stringBuffer = new StringBuffer();
             String line;
 
@@ -44,7 +43,9 @@ public class Client {
             StringReader stringReader = new StringReader(stringBuffer.toString());
             Student student = (Student) unmarshaller.unmarshal(stringReader);
             System.out.println(student.toString());
-
+            bufferedReader.close();
+            stringReader.close();
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JAXBException e) {
