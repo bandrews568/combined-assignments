@@ -121,6 +121,7 @@ public class Main {
      * @param jaxb the JAXB context to use
      * @return a {@link Session} object built from the data in the given directory
      */
+<<<<<<< Updated upstream
     public static Session readSession(File rootDirectory, JAXBContext jaxb) {
 
         File[] studentFileList = walkDirectory(STUDENT_DIRECTORY_PATH);
@@ -133,6 +134,18 @@ public class Main {
         session.setStartDate("08-08-2016");
         session.setStudents(studentList);
         session.setInstructor(instructor);
+=======
+    public static Session readSession(File rootDirectory, JAXBContext jaxbContext) {
+    	
+    	Session session = null;
+
+        try {        	
+        	Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        	session = (Session) unmarshaller.unmarshal(rootDirectory);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+>>>>>>> Stashed changes
         return session;
     }
 
@@ -143,6 +156,7 @@ public class Main {
      * @param sessionFile the file to which the session is to be written
      * @param jaxb the JAXB context to use
      */
+<<<<<<< Updated upstream
     public static void writeSession(Session session, File sessionFile, JAXBContext jaxb) {
 
     	try {
@@ -152,6 +166,18 @@ public class Main {
 		}  catch (JAXBException e) {
     		e.printStackTrace();
 		}
+=======
+    public static void writeSession(Session session, File sessionFile, JAXBContext jaxbContext) {
+        
+    	try {
+			Marshaller marshaller = jaxbContext.createMarshaller();
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	
+>>>>>>> Stashed changes
     }
 
     /**
@@ -181,6 +207,7 @@ public class Main {
      *      </session>
      */
     public static void main(String[] args) {
+<<<<<<< Updated upstream
 
         try {
             studentContext = JAXBContext.newInstance(Student.class);
@@ -191,5 +218,10 @@ public class Main {
         } catch (JAXBException e) {
             e.printStackTrace();
         }
+=======
+    	
+     	
+    	
+>>>>>>> Stashed changes
     }
 }
