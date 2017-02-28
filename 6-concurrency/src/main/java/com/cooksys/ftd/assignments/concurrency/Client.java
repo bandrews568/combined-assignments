@@ -25,7 +25,7 @@ public class Client implements Runnable {
     	for (int i = 0; i < numberOfInstanceClientsToSpawn; i++) {
     		ClientInstanceConfig clientInstanceConfigFile = config.getInstances().get(i);
     		
-    		ClientInstance clientInstance = new ClientInstance(clientInstanceConfigFile, port, host);
+    		ClientInstance clientInstance = new ClientInstance(clientInstanceConfigFile, host, port);
     		
     		Thread clientThread = new Thread(clientInstance);
     		clientThread.start();   		
