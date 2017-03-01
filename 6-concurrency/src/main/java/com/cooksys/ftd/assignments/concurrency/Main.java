@@ -28,6 +28,7 @@ public class Main {
        boolean isServerDisabled = configFile.getServer().isDisabled();
        boolean isClientDisabled = configFile.getClient().isDisabled();
        
+       // TODO expand on this later
        if (isServerDisabled || isClientDisabled) {
     	   if (isServerDisabled) {
     		   System.out.println("Server is disabled");
@@ -45,10 +46,14 @@ public class Main {
               
        if (!isServerDisabled) {
     	   Server server = new Server(configFile.getServer());
+    	   Thread serverThread = new Thread(server);
+    	   serverThread.start();
        }
        
        if (!isClientDisabled) {
     	   Client client = new Client(configFile.getClient());
+    	   Thread clientThread = new Thread(client);
+    	   clientThread.start();
        }
     }
 }

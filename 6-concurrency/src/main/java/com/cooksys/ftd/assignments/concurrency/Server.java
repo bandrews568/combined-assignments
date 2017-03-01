@@ -38,7 +38,6 @@ public class Server implements Runnable {
     		
     		checkSpawnStrategy(maxClients);
     		
-    		
     		while (true) {
     			Socket socket = serverSocket.accept();
     			socket.close();
