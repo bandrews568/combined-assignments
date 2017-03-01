@@ -1,19 +1,13 @@
 package com.cooksys.ftd.assignments.concurrency;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.Socket;
 
 import com.cooksys.ftd.assignments.concurrency.model.config.ClientInstanceConfig;
 import com.cooksys.ftd.assignments.concurrency.model.message.Request;
 import com.cooksys.ftd.assignments.concurrency.model.message.RequestType;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.io.IOException;
-import java.net.Socket;
 import java.util.List;
 
 public class ClientInstance implements Runnable {
@@ -21,28 +15,19 @@ public class ClientInstance implements Runnable {
     private final ClientInstanceConfig config;
     private final int port;
     private final String host;
+    private String clientName;
 
     private int delay;
     private List<Request> requestList;
 
-	private String clientName;
-
-
-    public ClientInstance(ClientInstanceConfig config, String host, int port, String clientName) {
+    public ClientInstance(ClientInstanceConfig config, String host, int port) {
 
         this.config = config;
         this.port = port;
         this.host = host;
-        this.clientName = clientName;
 
         delay = config.getDelay();
         requestList = config.getRequests();
-    }
-
-    public ClientInstance(ClientInstanceConfig config, int port, String host) {
-        this.config = config;
-        this.port = port;
-        this.host = host;
     }
 
     @Override
@@ -61,8 +46,8 @@ public class ClientInstance implements Runnable {
             	OutputStream outputStream = socket.getOutputStream();
             	
             	if (requestType.equals(RequestType.TIME)) {
-            		long currrentSystemTime = System.currentTimeMillis();
-            		outputStream.write((int) currrentSystemTime);
+            		long currentSystemTime = System.currentTimeMillis();
+            		outputStream.write((int) currentSystemTime);
             	} else if (requestType.equals(RequestType.IDENTITY)) {
             		outputStream.write(clientName.getBytes());
             	} else if (requestType.equals(RequestType.DONE)) {
@@ -80,5 +65,13 @@ public class ClientInstance implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
     }
 }

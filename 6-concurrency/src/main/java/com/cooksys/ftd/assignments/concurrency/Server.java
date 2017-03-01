@@ -3,8 +3,6 @@ package com.cooksys.ftd.assignments.concurrency;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.junit.experimental.max.MaxCore;
-
 import com.cooksys.ftd.assignments.concurrency.model.config.ServerConfig;
 import com.cooksys.ftd.assignments.concurrency.model.config.SpawnStrategy;
 
