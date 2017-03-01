@@ -18,7 +18,7 @@ public class Client implements Runnable {
 
 	// Used for SEQUENTIAL spawn strategy, only one instance is allowed to be spawned at a time
 	// Fix this where ClientInstance will send back a notification back to the client so we can change this
-	private static boolean hasInstanceSpawned = false;
+	private static boolean currentlyHasActiveClientSpawned = false;
 
     public Client(ClientConfig config) {
         this.config = config;
@@ -56,7 +56,7 @@ public class Client implements Runnable {
 		    	}
 				break;
 			case SEQUENTIAL:
-				if (!hasInstanceSpawned) {
+				if (!currentlyHasActiveClientSpawned) {
 					// TODO spawn a new Thread here
 				}
 				break;   	
