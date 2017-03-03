@@ -20,6 +20,8 @@ public class ClientInstance implements Runnable {
     private int delay;
     private List<Request> requestList;
 
+    private boolean sequentialSpawnStrategy = false;
+
     public ClientInstance(ClientInstanceConfig config, String host, int port) {
 
         this.config = config;
@@ -49,7 +51,7 @@ public class ClientInstance implements Runnable {
             		long currentSystemTime = System.currentTimeMillis();
             		outputStream.write((int) currentSystemTime);
             	} else if (requestType.equals(RequestType.IDENTITY)) {
-            		outputStream.write(clientName.getBytes());
+            		outputStream.write(getClientName().getBytes());
             	} else if (requestType.equals(RequestType.DONE)) {
             		String doneMessage = "DONE";
             		outputStream.write(doneMessage.getBytes());
@@ -69,6 +71,14 @@ public class ClientInstance implements Runnable {
 
     public String getClientName() {
         return clientName;
+    }
+
+    public boolean isSequentitalSpawnStrategy() {
+        return sequentialSpawnStrategy;
+    }
+
+    public void setSequentitalSpawnStrategy() {
+        sequentialSpawnStrategy = true;
     }
 
     public void setClientName(String clientName) {

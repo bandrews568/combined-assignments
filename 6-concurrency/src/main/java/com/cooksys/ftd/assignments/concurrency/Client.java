@@ -56,9 +56,24 @@ public class Client implements Runnable {
 		    	}
 				break;
 			case SEQUENTIAL:
-				if (!currentlyHasActiveClientSpawned) {
-					// TODO spawn a new Thread here
-				}
+				do {
+					if (!currentlyHasActiveClientSpawned) {
+						ClientInstanceConfig clientInstanceConfigFile = config.getInstances().get(getCurrentInstanceNumber());
+						ClientInstance clientInstance = new ClientInstance(clientInstanceConfigFile, config.getHost(), config.getPort());
+
+						String clientName = generateInstanceName();
+						clientInstance.setClientName(clientName);
+
+
+						mapInstanceNameToInstance(clientName, clientInstance);
+
+						Thread clientThread = new Thread(clientInstance);
+						clientThread.start();
+
+						incrementCurrentInstanceNumber();
+					}
+				} while (currentlyHasActiveClientSpawned);
+
 				break;   	
     	}
     }
@@ -74,5 +89,37 @@ public class Client implements Runnable {
 
 	private void mapInstanceNameToInstance(String clientName, ClientInstance clientInstance) {
 		clientInstanceMap.put(clientName, clientInstance);
+	}
+
+	public ClientConfig getConfig() {
+		return config;
+	}
+
+	public void setConfig(ClientConfig config) {
+		this.config = config;
+	}
+
+	public Map<String, ClientInstance> getClientInstanceMap() {
+		return clientInstanceMap;
+	}
+
+	public void setClientInstanceMap(Map<String, ClientInstance> clientInstanceMap) {
+		this.clientInstanceMap = clientInstanceMap;
+	}
+
+	public int getCurrentInstanceNumber() {
+		return currentInstanceNumber;
+	}
+
+	public void incrementCurrentInstanceNumber() {
+		this.currentInstanceNumber = currentInstanceNumber++;
+	}
+
+	public static boolean isCurrentlyHasActiveClientSpawned() {
+		return currentlyHasActiveClientSpawned;
+	}
+
+	public static void setCurrentlyHasActiveClientSpawned(boolean currentlyHasActiveClientSpawned) {
+		Client.currentlyHasActiveClientSpawned = currentlyHasActiveClientSpawned;
 	}
 }
