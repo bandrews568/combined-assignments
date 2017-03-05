@@ -1,6 +1,7 @@
 package com.cooksys.ftd.assignments.concurrency;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import com.cooksys.ftd.assignments.concurrency.model.config.SpawnStrategy;
 public class Client implements Runnable {
 	
 	ClientConfig config;
-	Map<String, ClientInstance> clientInstanceMap;
+	Map<String, ClientInstance> clientInstanceMap = new HashMap<>();
 
 	private int currentInstanceNumber = 1;
 
@@ -26,7 +27,7 @@ public class Client implements Runnable {
 
     @Override
     public void run() {
-        
+		
     	int port = config.getPort();
     	String host = config.getHost();
     	
@@ -71,16 +72,18 @@ public class Client implements Runnable {
 						clientThread.start();
 
 						incrementCurrentInstanceNumber();
+
+						clientInstance.setSequentitalSpawnStrategy(true);
+						setCurrentlyHasActiveClientSpawned(true);
 					}
 				} while (currentlyHasActiveClientSpawned);
-
 				break;   	
     	}
     }
 
     private String generateInstanceName() {
 		String instanceName = "ClientInstance-" + currentInstanceNumber;
-		System.out.println("Generated: " + instanceName); // Remove after testing!
+		System.out.println("Generated: " + instanceName);
 
 		currentInstanceNumber++;
 

@@ -38,21 +38,23 @@ public class ClientInstance implements Runnable {
         for (int i = 0; i < requestList.size(); i++) {       	
 
             try (Socket socket = new Socket(host, port)) {
-            	
-            	// We have a delay, but it only applies to sending out the second item
+
+                // We have a delay, but it only applies to sending out the second item
             	if (i > 0 && delay > 0) {
             		Thread.sleep(500);
             	}
             	            	
-            	Request requestType = requestList.get(i);
+            	RequestType requestType = requestList.get(i).getType();
             	OutputStream outputStream = socket.getOutputStream();
-            	
-            	if (requestType.equals(RequestType.TIME)) {
+
+                if (requestType.equals(RequestType.TIME)) {
             		long currentSystemTime = System.currentTimeMillis();
             		outputStream.write((int) currentSystemTime);
-            	} else if (requestType.equals(RequestType.IDENTITY)) {
+                    System.out.println(clientName + " sending: " + "'" +currentSystemTime +  "'" +" to " + socket);
+                } else if (requestType.equals(RequestType.IDENTITY)) {
             		outputStream.write(getClientName().getBytes());
-            	} else if (requestType.equals(RequestType.DONE)) {
+                    System.out.println(clientName + " sending: " +  "'" +getClientName() + "'" + " to " + socket);
+                } else if (requestType.equals(RequestType.DONE)) {
             		String doneMessage = "DONE";
             		outputStream.write(doneMessage.getBytes());
             		socket.close();
@@ -67,6 +69,10 @@ public class ClientInstance implements Runnable {
                 e.printStackTrace();
             }
         }
+        // This request is done. Tell client to spawn the next instance.
+        if (sequentialSpawnStrategy) {
+            Client.setCurrentlyHasActiveClientSpawned(false);
+        }
     }
 
     public String getClientName() {
@@ -77,7 +83,7 @@ public class ClientInstance implements Runnable {
         return sequentialSpawnStrategy;
     }
 
-    public void setSequentitalSpawnStrategy() {
+    public void setSequentitalSpawnStrategy(boolean strategy) {
         sequentialSpawnStrategy = true;
     }
 

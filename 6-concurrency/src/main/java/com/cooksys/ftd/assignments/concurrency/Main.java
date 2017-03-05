@@ -2,7 +2,9 @@ package com.cooksys.ftd.assignments.concurrency;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
+import com.cooksys.ftd.assignments.concurrency.model.config.ClientInstanceConfig;
 import com.cooksys.ftd.assignments.concurrency.model.config.Config;
 
 import ch.qos.logback.classic.net.SyslogAppender;
@@ -10,7 +12,7 @@ import ch.qos.logback.classic.net.SyslogAppender;
 
 public class Main {
 	
-	private static final Path CONFIG_FILE_PATH = Paths.get("config/config.xml");
+	private static final Path CONFIG_FILE_PATH = Paths.get("6-concurrency/config/config.xml");
 
     /**
      * First, load a {@link com.cooksys.ftd.assignments.concurrency.model.config.Config} object from
@@ -24,34 +26,45 @@ public class Main {
      */
     public static void main(String[] args) {
        Config configFile = Config.load(CONFIG_FILE_PATH);
-       
-       boolean isServerDisabled = configFile.getServer().isDisabled();
-       boolean isClientDisabled = configFile.getClient().isDisabled();
+
+       List<ClientInstanceConfig> numberOfClientsToSpawn = configFile.getClient().getInstances();
+
+       boolean serverDisabled = configFile.getServer().isDisabled();
+       boolean clientDisabled = configFile.getClient().isDisabled();
        
        // TODO expand on this later
-       if (isServerDisabled || isClientDisabled) {
-    	   if (isServerDisabled) {
+       if (serverDisabled || clientDisabled) {
+    	   if (serverDisabled) {
     		   System.out.println("Server is disabled");
     	   }
     	   
-    	   if (isClientDisabled) {
+    	   if (clientDisabled) {
     		   System.out.println("Client is disabled");
     	   }
     	   
-    	   if (isClientDisabled && isServerDisabled) {
+    	   if (clientDisabled && serverDisabled) {
     		   System.exit(0);
     	   }
        }
 
+       Thread serverThread;
               
-       if (!isServerDisabled) {
-    	   Server server = new Server(configFile.getServer());
-    	   Thread serverThread = new Thread(server);
+       if (!serverDisabled) {
+		   System.out.println("Starting server");
+		   Server server = new Server(configFile.getServer(), numberOfClientsToSpawn);
+    	   serverThread = new Thread(server);
     	   serverThread.start();
        }
-       
-       if (!isClientDisabled) {
-    	   Client client = new Client(configFile.getClient());
+
+       try {
+		   Thread.sleep(3000);
+	   } catch (InterruptedException e) {
+		   e.printStackTrace();
+	   }
+
+       if (!clientDisabled) {
+		   System.out.println("Starting client");
+		   Client client = new Client(configFile.getClient());
     	   Thread clientThread = new Thread(client);
     	   clientThread.start();
        }

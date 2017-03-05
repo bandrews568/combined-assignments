@@ -2,7 +2,9 @@ package com.cooksys.ftd.assignments.concurrency;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
+import com.cooksys.ftd.assignments.concurrency.model.config.ClientInstanceConfig;
 import com.cooksys.ftd.assignments.concurrency.model.config.ServerConfig;
 import com.cooksys.ftd.assignments.concurrency.model.config.SpawnStrategy;
 
@@ -10,9 +12,13 @@ public class Server implements Runnable {
 	
 	private ServerConfig config;
 	private SpawnStrategy spawnStrategy;
+	private List<ClientInstanceConfig> numberOfInstancesToCreate;
 
-    public Server(ServerConfig config) {
-        this.config = config;
+
+	public Server(ServerConfig config, List<ClientInstanceConfig> numberOfInstancesToCreate) {
+
+		this.config = config;
+		this.numberOfInstancesToCreate = numberOfInstancesToCreate;
     }
     
     public void checkSpawnStrategy(int numberOfClients) {
@@ -31,19 +37,33 @@ public class Server implements Runnable {
     public void run() {
         int portNumber = config.getPort();
     	int maxClients = config.getMaxClients();
-    	       
-    	try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
-    		
-    		checkSpawnStrategy(maxClients);
-    		
-    		while (true) {
-    			Socket socket = serverSocket.accept();
-    			socket.close();
-    		}
 
-    	} catch (Exception e){
-    		e.getMessage();
-    		e.printStackTrace();
-    	}
+    	for (int i = 0; i < numberOfInstancesToCreate.size(); i++) {
+			try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
+
+				checkSpawnStrategy(maxClients);
+
+				boolean isServerStarted = false;
+
+				while (true) {
+					Socket socket = serverSocket.accept();
+					System.out.println("Created client: " + socket );
+					if (!isServerStarted) {
+						ClientHandler clientHandler = new ClientHandler(socket);
+						Thread clientHandlerThread = new Thread(clientHandler);
+
+						clientHandlerThread.start();
+
+						isServerStarted = true;
+					}
+				}
+
+			} catch (Exception e){
+				e.getMessage();
+				e.printStackTrace();
+			}
+		}
+
+
     }
 }
