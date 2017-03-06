@@ -17,7 +17,6 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("ClientHandler started");
         try {
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -25,7 +24,7 @@ public class ClientHandler implements Runnable {
             while (true) {
                 String line = in.readLine();
                 if (line != null) {
-                    System.out.println(line);
+                    System.out.println("Received: " + line);
                 }
             }
         } catch (IOException e) {

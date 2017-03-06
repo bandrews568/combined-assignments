@@ -83,7 +83,6 @@ public class Client implements Runnable {
 
     private String generateInstanceName() {
 		String instanceName = "ClientInstance-" + currentInstanceNumber;
-		System.out.println("Generated: " + instanceName);
 
 		currentInstanceNumber++;
 

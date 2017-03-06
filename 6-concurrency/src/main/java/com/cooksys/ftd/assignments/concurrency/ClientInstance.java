@@ -8,6 +8,7 @@ import com.cooksys.ftd.assignments.concurrency.model.message.Request;
 import com.cooksys.ftd.assignments.concurrency.model.message.RequestType;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ClientInstance implements Runnable {
@@ -48,12 +49,12 @@ public class ClientInstance implements Runnable {
             	OutputStream outputStream = socket.getOutputStream();
 
                 if (requestType.equals(RequestType.TIME)) {
-            		long currentSystemTime = System.currentTimeMillis();
-            		outputStream.write((int) currentSystemTime);
-                    System.out.println(clientName + " sending: " + "'" +currentSystemTime +  "'" +" to " + socket);
+                    LocalDateTime now = LocalDateTime.now();
+            		outputStream.write(now.toString().getBytes());
+                    System.out.println(clientName + " sending: " + "'" + now +  "'" +" to " + socket);
                 } else if (requestType.equals(RequestType.IDENTITY)) {
             		outputStream.write(getClientName().getBytes());
-                    System.out.println(clientName + " sending: " +  "'" +getClientName() + "'" + " to " + socket);
+                    System.out.println(clientName + " sending: " +  "'" + getClientName() + "'" + " to " + socket);
                 } else if (requestType.equals(RequestType.DONE)) {
             		String doneMessage = "DONE";
             		outputStream.write(doneMessage.getBytes());

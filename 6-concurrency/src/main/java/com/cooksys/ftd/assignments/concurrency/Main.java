@@ -7,9 +7,6 @@ import java.util.List;
 import com.cooksys.ftd.assignments.concurrency.model.config.ClientInstanceConfig;
 import com.cooksys.ftd.assignments.concurrency.model.config.Config;
 
-import ch.qos.logback.classic.net.SyslogAppender;
-
-
 public class Main {
 	
 	private static final Path CONFIG_FILE_PATH = Paths.get("6-concurrency/config/config.xml");
@@ -31,8 +28,7 @@ public class Main {
 
        boolean serverDisabled = configFile.getServer().isDisabled();
        boolean clientDisabled = configFile.getClient().isDisabled();
-       
-       // TODO expand on this later
+
        if (serverDisabled || clientDisabled) {
     	   if (serverDisabled) {
     		   System.out.println("Server is disabled");
@@ -50,20 +46,12 @@ public class Main {
        Thread serverThread;
               
        if (!serverDisabled) {
-		   System.out.println("Starting server");
 		   Server server = new Server(configFile.getServer(), numberOfClientsToSpawn);
     	   serverThread = new Thread(server);
     	   serverThread.start();
-       }
-
-       try {
-		   Thread.sleep(3000);
-	   } catch (InterruptedException e) {
-		   e.printStackTrace();
 	   }
 
        if (!clientDisabled) {
-		   System.out.println("Starting client");
 		   Client client = new Client(configFile.getClient());
     	   Thread clientThread = new Thread(client);
     	   clientThread.start();

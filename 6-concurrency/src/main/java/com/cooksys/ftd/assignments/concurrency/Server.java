@@ -43,19 +43,14 @@ public class Server implements Runnable {
 
 				checkSpawnStrategy(maxClients);
 
-				boolean isServerStarted = false;
-
 				while (true) {
 					Socket socket = serverSocket.accept();
 					System.out.println("Created client: " + socket );
-					if (!isServerStarted) {
-						ClientHandler clientHandler = new ClientHandler(socket);
-						Thread clientHandlerThread = new Thread(clientHandler);
 
-						clientHandlerThread.start();
+					ClientHandler clientHandler = new ClientHandler(socket);
+					Thread clientHandlerThread = new Thread(clientHandler);
 
-						isServerStarted = true;
-					}
+					clientHandlerThread.start();
 				}
 
 			} catch (Exception e){
