@@ -42,7 +42,7 @@ public class ClientInstance implements Runnable {
 
                 // We have a delay, but it only applies to sending out the second item
             	if (i > 0 && delay > 0) {
-            		Thread.sleep(500);
+                    Thread.sleep(500);
             	}
             	            	
             	RequestType requestType = requestList.get(i).getType();
@@ -69,10 +69,6 @@ public class ClientInstance implements Runnable {
                 e.getMessage();
                 e.printStackTrace();
             }
-        }
-        // This request is done. Tell client to spawn the next instance.
-        if (sequentialSpawnStrategy) {
-            Client.setCurrentlyHasActiveClientSpawned(false);
         }
     }
 

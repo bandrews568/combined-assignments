@@ -43,11 +43,9 @@ public class Main {
     	   }
        }
 
-       Thread serverThread;
-              
        if (!serverDisabled) {
 		   Server server = new Server(configFile.getServer(), numberOfClientsToSpawn);
-    	   serverThread = new Thread(server);
+    	   Thread serverThread = new Thread(server);
     	   serverThread.start();
 	   }
 

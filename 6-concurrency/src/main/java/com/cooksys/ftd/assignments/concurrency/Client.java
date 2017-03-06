@@ -53,31 +53,31 @@ public class Client implements Runnable {
 					mapInstanceNameToInstance(clientName, clientInstance);
 
 		    		Thread clientThread = new Thread(clientInstance);
-		    		clientThread.start();   		
+		    		clientThread.start();
 		    	}
 				break;
 			case SEQUENTIAL:
-				do {
-					if (!currentlyHasActiveClientSpawned) {
-						ClientInstanceConfig clientInstanceConfigFile = config.getInstances().get(getCurrentInstanceNumber());
-						ClientInstance clientInstance = new ClientInstance(clientInstanceConfigFile, config.getHost(), config.getPort());
+				for (int i = 0; i < numberOfInstanceClientsToSpawn; i++) {
+					ClientInstanceConfig clientInstanceConfigFile = config.getInstances().get(i);
 
-						String clientName = generateInstanceName();
-						clientInstance.setClientName(clientName);
+					ClientInstance clientInstance = new ClientInstance(clientInstanceConfigFile, host, port);
 
+					String clientName = generateInstanceName();
+					clientInstance.setClientName(clientName);
 
-						mapInstanceNameToInstance(clientName, clientInstance);
+					mapInstanceNameToInstance(clientName, clientInstance);
 
-						Thread clientThread = new Thread(clientInstance);
-						clientThread.start();
+					Thread clientThread = new Thread(clientInstance);
+					clientThread.start();
 
-						incrementCurrentInstanceNumber();
-
-						clientInstance.setSequentitalSpawnStrategy(true);
-						setCurrentlyHasActiveClientSpawned(true);
+					try {
+						clientThread.join();
+					} catch (InterruptedException e) {
+						e.getMessage();
+						e.printStackTrace();
 					}
-				} while (currentlyHasActiveClientSpawned);
-				break;   	
+				}
+				break;
     	}
     }
 

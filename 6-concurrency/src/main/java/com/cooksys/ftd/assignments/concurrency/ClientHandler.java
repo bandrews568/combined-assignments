@@ -9,7 +9,6 @@ import java.net.Socket;
 public class ClientHandler implements Runnable {
 
     private Socket socket;
-    private PrintWriter out;
 
     public ClientHandler(Socket socket) {
         this.socket = socket;
@@ -18,13 +17,18 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             while (true) {
                 String line = in.readLine();
+
                 if (line != null) {
                     System.out.println("Received: " + line);
+
+                    if (line.toString().equals("DONE")) {
+                        socket.close();
+                        break;
+                    }
                 }
             }
         } catch (IOException e) {

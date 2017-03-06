@@ -11,7 +11,6 @@ import com.cooksys.ftd.assignments.concurrency.model.config.SpawnStrategy;
 public class Server implements Runnable {
 	
 	private ServerConfig config;
-	private SpawnStrategy spawnStrategy;
 	private List<ClientInstanceConfig> numberOfInstancesToCreate;
 
 
@@ -20,28 +19,13 @@ public class Server implements Runnable {
 		this.config = config;
 		this.numberOfInstancesToCreate = numberOfInstancesToCreate;
     }
-    
-    public void checkSpawnStrategy(int numberOfClients) {
-    	
-    	if (numberOfClients < 0 ) {
-    		spawnStrategy = SpawnStrategy.PARALLEL;
-    	} else if (numberOfClients == 0) {
-    		spawnStrategy = SpawnStrategy.NONE;
-    	} else {
-    		spawnStrategy = SpawnStrategy.SEQUENTIAL;
-    	}
-    }
 
-    
     @Override
     public void run() {
         int portNumber = config.getPort();
-    	int maxClients = config.getMaxClients();
 
     	for (int i = 0; i < numberOfInstancesToCreate.size(); i++) {
 			try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
-
-				checkSpawnStrategy(maxClients);
 
 				while (true) {
 					Socket socket = serverSocket.accept();
@@ -58,7 +42,5 @@ public class Server implements Runnable {
 				e.printStackTrace();
 			}
 		}
-
-
     }
 }
